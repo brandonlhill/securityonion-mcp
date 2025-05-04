@@ -1,70 +1,69 @@
 #!/bin/bash
 
-# This script sets up the runtime environment for the Security Onion–Assemblyline middleware project (so-mcp). 
-# Specifically, it performs the following tasks:
-#
-#    Checks for Python 3
-#    Verifies that Python 3 is installed on the system.
-#
-#    Ensures the venv module is available
-#    If the Python venv module is missing, it installs it via apt.
-#
-#    Creates a Python virtual environment
-#    Sets up an isolated Python environment in the .venv/ directory to avoid polluting the global Python environment.
-#
-#    Activates the virtual environment and upgrades pip
-#    Ensures pip is up to date inside the virtual environment.
-#
-#    Installs Python dependencies
-#    Installs packages listed in requirements.txt (if it exists).
-#
-#    Initializes the configuration file
-#    Runs config.py, which ensures that a configuration file is created at ~/.so-mcp/config.ini with the correct structure and secure file permissions (read/write only for the user). If the file is missing or incomplete, config.py prompts the user to enter the necessary values for Elasticsearch connection.
-#
-#    Makes key project files executable
-#    Ensures server.py and run.sh are marked as executable so they can be run directly.
+# This script sets up the runtime environment for the Security Onion–Assemblyline middleware project (so-mcp).
+# It dynamically selects a Python 3.10+ interpreter, sets up a venv, installs dependencies, runs config.py, and sets permissions.
 
 VENV_DIR=".venv"
 
-echo "[Installer] Checking for Python 3..."
-if ! command -v python3 &>/dev/null; then
-    echo "Python3 not found. Please install it."
+# === Step 1: Find Python >= 3.10 ===
+echo "[Installer] Searching for Python ≥ 3.10..."
+PYTHON=""
+for BIN in python3.12 python3.11 python3.10; do
+    if command -v "$BIN" &>/dev/null; then
+        VERSION=$($BIN -c 'import sys; print(sys.version_info >= (3, 10))')
+        if [[ "$VERSION" == "True" ]]; then
+            PYTHON="$BIN"
+            break
+        fi
+    fi
+done
+
+if [[ -z "$PYTHON" ]]; then
+    echo "[Error] No compatible Python (>=3.10) found."
     exit 1
 fi
 
-echo "[Installer] Checking for venv module..."
-if ! python3 -m venv --help &>/dev/null; then
-    echo "python3-venv not found. Installing..."
+echo "[Installer] Using Python interpreter: $PYTHON"
+
+# === Step 2: Ensure venv module is available ===
+echo "[Installer] Checking for venv support..."
+if ! "$PYTHON" -m venv --help &>/dev/null; then
+    echo "[Installer] Missing venv module. Installing python3-venv..."
     sudo apt update && sudo apt install -y python3-venv
 fi
 
+# === Step 3: Create virtual environment ===
 echo "[Installer] Creating virtual environment at $VENV_DIR..."
-python3 -m venv "$VENV_DIR"
+"$PYTHON" -m venv "$VENV_DIR"
 
-
+# === Step 4: Activate venv ===
 echo "[Installer] Activating virtual environment..."
-#shellcheck disable=SC1091
+# shellcheck disable=SC1091
 source "$VENV_DIR/bin/activate"
 
+# === Step 5: Upgrade pip ===
 echo "[Installer] Upgrading pip..."
 pip install --upgrade pip
 
+# === Step 6: Install dependencies ===
 echo "[Installer] Installing requirements..."
-if [ -f requirements.txt ]; then
+if [[ -f requirements.txt ]]; then
     pip install -r requirements.txt
 else
-    echo "requirements.txt not found. Skipping pip install."
+    echo "[Installer] No requirements.txt found. Skipping."
 fi
 
-echo ""
-echo ""
-echo "[Installer] Running config.py to create ~/.so-mcp/config.ini"
-python3 config.py
-echo ""
-echo ""
+# === Step 7: Initialize config ===
+echo
+echo "[Installer] Running config.py to create ~/.so-mcp/config.ini..."
+"$PYTHON" config.py
+echo
 
+# === Step 8: Set executable permissions ===
+echo "[Installer] Marking project scripts executable..."
 chmod +x server.py run.sh
 
+# === Done ===
 echo
 echo "[Setup complete]"
 echo "Run 'source $VENV_DIR/bin/activate' to activate your environment."
