@@ -66,6 +66,12 @@ To get the software repo running on a stand security onion dsitro, you will need
 
 ## Configure Securityonion firewall
 To allow outbound connections to the mcp-server, we will need to write a rule to allow connections from your remote mcp client.
+
+Easy solution that worked for me (if firewalld is down):
+```shell
+sudo iptables -I INPUT -p tcp --dport 5001 -j ACCEPT
+```
+
 ```shell
 sudo so-firewall --help
 sudo firewall-cmd --state # check if the firewall is running (if not, then you can skip adding the remote host)
