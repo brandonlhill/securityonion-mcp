@@ -26,13 +26,11 @@ SecurityOnion must have an internet connection, if not, please review the "Insta
 ## Install Instructions
 If internet access is available, the install.sh script will automatically download the official get-pip.py installer, install pip for Python3, install the required Python packages from requirements.txt, and create a local virtual environment.
 
-During setup, the script will prompt you to provide credentials for accessing the Security Onion Elasticsearch database. These values are saved to a .env file in the current directory. The application reads this .env file to obtain the Elasticsearch base URL, username, and password.
-
-Once configured, the server runs and exposes a remote interface on TCP port 5001 to receive and handle incoming requests.
-
+Run the installer (you will be prompted to try elasticsearch creds):
 ```shell
 ./install.sh
 ```
+
 
 ## Configure Securityonion firewall
 To allow outbound connections to the mcp-server, we will need to write a rule to allow connections from your remote mcp client.
@@ -46,12 +44,6 @@ sudo firewall-cmd --get-active-zones
 # Add port to a zone
 sudo firewall-cmd --zone=SecurityOnion --add-port=5001/tcp --permanent
 sudo firewall-cmd --reload
-
-```
-
-Note that you can modify the .env and update params:
-```shell
-nano .env
 ```
 
 ## Running the Server
@@ -67,18 +59,7 @@ You can add other mcp servers by downloading them and placing them into the tool
 # Installer Fails:
 This project assumes that your securityonion services has internet! Note that you're not entirely out of luck. I recommend reading about how to 'compile' python software into single package binaries. You can use pyinstaller! 
 
-# .Env for prod 
-Create a file named .env with the following code (note install.sh should have done this already):
-```bash 
-ELASTICSEARCH_HOST=https://localhost:9200
-ELASTICSEARCH_USERNAME=<elasticsearch-username>
-ELASTICSEARCH_PASSWORD=<elasticsearch-password>
-```
+# Config.ini
+The python config.py code creates a file under (local user home dir) ~/.so-mcp/config.ini with the file permission: 0666 (user Read/Write only). If you need to modify the file, that is the best place to do it.
 
-# Developer Notes 
-Create your virtual py enviornment
-```shell
-sudo apt install python3.12-venv
-python3 -m venv ~/.venv/so-mcp
-source ~/.venv/so-mcp/bin/activate
-```
+Note, you can also use config.py to interactively configure the config.ini and view the variables there.\

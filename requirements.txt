@@ -2,3 +2,4 @@ elasticsearch==8.17.2
 fastmcp==2.2.6
 python-dotenv
 colorlog==6.9.0
+pyinstaller
