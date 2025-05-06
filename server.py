@@ -9,15 +9,10 @@ import config
 
 from fastmcp import FastMCP
 from tools.so_elasticsearch_mcp import so_elasticsearch_mcp
-from tools.so_files_mcp import so_files_mcp
+from tools.so_filesearch_mcp import so_filesearch_mcp
 
 # Define mcp class globally
 main_mcp = FastMCP(name="securityonion")
-
-async def setup():
-    """Import subservers with prefixes here."""
-    await main_mcp.import_server("so_elasticsearch", so_elasticsearch_mcp)
-    await main_mcp.import_server("so_files", so_files_mcp)
 
 async def main():
     # Check if the config file has been created
@@ -27,23 +22,14 @@ async def main():
         sys.exit(1)
 
     # Setup servers
-    await setup()
+    await main_mcp.import_server("elasticsearch", so_elasticsearch_mcp)
+    await main_mcp.import_server("filesearch", so_filesearch_mcp)
 
     # Create a shutdown event
     shutdown_event = asyncio.Event()
 
-    # Define signal handlers
-    def shutdown_signal_handler():
-        print("Shutdown signal received. Cleaning up...")
-        shutdown_event.set()
-
-    # Register signal handlers
-    loop = asyncio.get_running_loop()
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, shutdown_signal_handler)
-
     # Run the MCP server in a background task
-    server_task = asyncio.create_task(main_mcp.run_async(transport="sse", host="0.0.0.0", port=5001))
+    server_task = asyncio.create_task(main_mcp.run_async(transport="sse", host="0.0.0.0", port=5001, log_level="debug"))
 
     # Wait for shutdown signal
     await shutdown_event.wait()
