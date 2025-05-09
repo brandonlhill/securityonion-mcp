@@ -7,11 +7,6 @@ import stat
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
-# TODO: add these to the config file reader
-# File directories
-ZEEK_DIR = "/nsm/zeek/extracted/complete"
-SURICATA_DIR = "/nsm/suripcap/1"
-STRELKA_DIR = "/nsm/strelka/processed"
 
 CONFIG_SECTION = "elasticsearch"
 REQUIRED_KEYS = ["host", "username", "password"]
