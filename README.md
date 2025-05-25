@@ -1,6 +1,27 @@
-# SecurityOnion MCP Server
-This mcp-server is designed as a standalone server that can be deployed on Security Onion (v2.3.1+) installations. It provides a flexible foundation for managing MCP communication workflows.
+<!-- Logo -->
+<p align="center">
+  <img src="images/logo.png" alt="Assemblyline MCP Logo" width="400"/>
+</p>
 
+<!-- <h1 align="center">Assemblyline MCP</h1> -->
+
+<p align="center">
+  Model Context Protocol (MCP) Server for SecurityOnion! 
+  <br />
+  <a href="#getting-started"><strong>Explore the docs »</strong></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/stars/brandonlhill/securityonion-mcp?style=social" alt="Stars"/>
+  <img src="https://img.shields.io/github/forks/brandonlhill/securityonion-mcp?style=social" alt="Forks"/>
+  <img src="https://img.shields.io/github/followers/brandonlhill?label=Follow&style=social" alt="Followers"/>
+</p>
+
+---
+
+## 🧾 About
+
+**SecurityOnion MCP** is a modular server implementation for the Model Context Protocol (MCP), providing seamless programmatic integration with Securityonion. 
 You can extend its functionality by adding subservers to the tools/ directory. With minimal changes, it's easy to build in additional capabilities tailored to your environment.
 
 
